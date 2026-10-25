@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+**/node_modules/
+**/target/
+**/dist/
+**/.angular/
+**/.npm-cache/
+**/__pycache__/
+*.py[cod]
+*.log
+config/frontend.local.json
+# Local planning and verification notes are not part of the source delivery.
+tasks/

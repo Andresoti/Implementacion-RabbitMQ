@@ -1,0 +1,44 @@
+@if (!auth.token) { <p>Your session has expired. Please sign in again.</p><button type="button" data-login (click)="login()">Sign in again</button> }
+@if (loginError()) { <p role="alert">{{loginError()}}</p> }
+<section aria-labelledby="orders-heading">
+ <h2 id="orders-heading">Orders</h2>
+ <button type="button" (click)="refreshOrders()" [disabled]="loading() || saving() || !auth.hasScope('pedidos/read')">Refresh orders</button>
+ @if (orderError()) { <p role="alert">{{orderError()}}</p> }
+ @if (!auth.hasScope('pedidos/read')) { <p>Listing orders requires pedidos/read permission.</p> }
+ @else if (loading()) { <p role="status">Loading orders…</p> }
+ @else if (!orders().length && !orderError()) { <p>No orders yet.</p> }
+ @else if (orders().length) {
+ <div class="table-scroll"><table><caption>Order list</caption><thead><tr><th scope="col">ID</th><th scope="col">Customer</th><th scope="col">Product</th><th scope="col">Quantity</th><th scope="col">Status</th></tr></thead>
+ <tbody>@for (order of orders(); track order.id) { <tr><td>{{order.id}}</td><td>{{order.cliente}}</td><td>{{order.producto}}</td><td>{{order.cantidad}}</td><td>{{order.estado}}</td></tr> }</tbody></table></div>
+ }
+</section>
+<section aria-labelledby="results-heading">
+ <h2 id="results-heading">Processing results</h2>
+ <p>Results appear asynchronously after an order is created. Refresh results to check progress.</p>
+ <button type="button" (click)="refreshResults()" [disabled]="resultsLoading() || !auth.hasScope('pedidos/read')">Refresh results</button>
+ @if (resultsError()) { <p role="alert">{{resultsError()}}</p> }
+ @if (!auth.hasScope('pedidos/read')) { <p>Listing results requires pedidos/read permission.</p> }
+ @else if (resultsError()) {}
+ @else if (resultsLoading()) { <p role="status">Loading results…</p> }
+ @else if (resultsLoaded() && !results().length) { <p>No processing results yet. Try refreshing again shortly.</p> }
+ @else if (results().length) {
+ <div class="table-scroll"><table><caption>Asynchronous processing results</caption>
+ <thead><tr><th scope="col">Event ID</th><th scope="col">Order ID</th><th scope="col">Domain</th><th scope="col">Result</th><th scope="col">Processed at</th></tr></thead>
+ <tbody>@for (result of results(); track result.eventId + result.domain) { <tr><td>{{result.eventId}}</td><td>{{result.orderId}}</td><td>{{result.domain}}</td><td>{{result.result}}</td><td>{{result.processedAt}}</td></tr> }</tbody></table></div>
+ }
+</section>
+<section aria-labelledby="create-heading">
+ <h2 id="create-heading">New order</h2>
+ @if (!auth.hasScope('pedidos/write')) { <p>Creating orders requires pedidos/write permission.</p> }
+ <form (ngSubmit)="create()" aria-label="New order">
+  <fieldset [disabled]="saving() || loading() || !auth.hasScope('pedidos/write')"><legend>Order details</legend>
+   <label for="customer">Customer</label><input id="customer" name="cliente" [(ngModel)]="input.cliente" required maxlength="100" autocomplete="name">
+   <label for="product">Product</label><input id="product" name="producto" [(ngModel)]="input.producto" required maxlength="200">
+   <label for="quantity">Quantity</label><input id="quantity" name="cantidad" type="number" [(ngModel)]="input.cantidad" required min="1" max="10000" step="1">
+   <button type="submit">Create order</button>
+  </fieldset>
+ </form>
+ @if (createError()) { <p role="alert">{{createError()}}</p> }
+ @if (saving()) { <p role="status">Creating order…</p> }
+ @if (success()) { <p role="status">{{success()}}</p> }
+</section>

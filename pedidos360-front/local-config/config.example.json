@@ -1,0 +1,10 @@
+{
+  "authority": "https://cognito-idp.us-east-1.amazonaws.com/REPLACE_USER_POOL_ID",
+  "clientId": "REPLACE_PUBLIC_CLIENT_ID",
+  "logoutDomain": "https://REPLACE_DOMAIN.auth.us-east-1.amazoncognito.com",
+  "redirectUri": "http://localhost:4200/callback",
+  "logoutRedirectUri": "http://localhost:4200/",
+  "apiBaseUrl": "http://localhost:8080",
+  "workerApiBaseUrl": "http://localhost:8081",
+  "scopes": "openid email pedidos/read pedidos/write"
+}
